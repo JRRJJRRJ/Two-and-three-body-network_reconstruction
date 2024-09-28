@@ -32,18 +32,19 @@ normalized_data = pd.read_excel('../SIS_Dynamic/state_nodes.xlsx')
 split_data = np.array_split(normalized_data, 5)
 
 # split_data 是一个列表，包含 5 个 (10000, 50) 的子矩阵
-for i, sub_matrix in enumerate(split_data):
-    print(f"Matrix {i + 1} shape: {sub_matrix.shape}")
+#for i, sub_matrix in enumerate(split_data):
+    #print(f"Matrix {i + 1} shape: {sub_matrix.shape}")
     #print(sub_matrix)  # 输出子矩阵内容
 
 first_sub_matrix = split_data[0]  # 获取第一个子矩阵
 sis_data = first_sub_matrix.astype(str).agg(lambda x: ''.join(x), axis=1).tolist()  #时间复杂度为O（p*k），p为行数
 #print(sis_data)
 
-threshold = 0.18
+threshold = 0.13
 basis = find_basis_strings(sis_data, threshold)
 
-print("选择的基字符串:", basis)
+basis_count=len(basis)
+print("选择的基字符串个数:", basis_count)
 
 
 # 已有一组基字符串，对于其中每一个基字符串，使用如下代码选择其对应的相关字符串
@@ -59,6 +60,10 @@ matching_strings = {}
 
 # 对于每一个基字符串，遍历时间序列数据来寻找对应的相关字符串
 # 遍历每个基字符串
+# 初始化 Si_ta 变量，用于存储结果
+Si_ta = {}
+
+# 遍历每个基字符串
 for basis_string in basis:
     matching_strings[basis_string] = []  # 初始化匹配字符串列表
 
@@ -66,32 +71,22 @@ for basis_string in basis:
         if normalized_hamming_distance(basis_string, s) < threshold_Y:
             matching_strings[basis_string].append(s)
 
-# 输出结果
-#for basis_string, matches in matching_strings.items():
-#    print(f"基字符串 '{basis_string}' 匹配的字符串: {matches}")
-
-
-
-# 使用基字符串及其对应的相关字符串生成Si(ta+1）变量
-
-# 初始化 Si_ta 变量，用于存储结果
-Si_ta = {}
-
-# 遍历每个基字符串及其匹配字符串
+# 查看生成了哪些基字符串，及其匹配的对应字符串个数
 for basis_string, matches in matching_strings.items():
-    if matches:  # 确保有匹配字符串
-        # 将基字符串转换为数值，假设其为可转换为浮点数的形式
-        basis_value = float(basis_string)
+    match_count = len(matches)
+    print(f"基字符串 '{basis_string}' 匹配的字符串个数: {match_count}")
 
-        # 将所有匹配字符串转换为数值
-        match_values = [float(s) for s in matches]
 
-        # 计算总和并除以 (n + 1)
-        average_value = (basis_value + sum(match_values)) / (len(match_values) + 1)
+    # 计算平均值Si(ta+1)，保持时间序列的形式
+    if matching_strings[basis_string]:
+        basis_values = np.array([float(x) for x in basis_string])  # 基字符串转换为数值数组
+        match_values = np.array([float(x) for match in matching_strings[basis_string] for x in match])
 
-        # 存储结果
-        Si_ta[basis_string] = average_value
+        average_value = (basis_values + match_values.reshape(-1, len(basis_values))).mean(axis=0)
+
+        # 将平均值转换为字符串形式
+        Si_ta[basis_string] = [str(value) for value in average_value]
 
 # 输出结果
-for basis_string, avg in Si_ta.items():
-    print(f"基字符串 '{basis_string}' 的平均值: {avg}")
+#for basis_string, avg in Si_ta.items():
+    #print(f"基字符串 '{basis_string}' 的平均值: {avg}")
