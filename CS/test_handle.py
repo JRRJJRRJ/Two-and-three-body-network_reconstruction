@@ -24,7 +24,7 @@ def find_basis_strings(sis_data, threshold):
     return basis_strings
 
 
-# `time_series_data` 是时间序列数据
+# `time_series_data` 是时间序列数据，对时间序列数据进行预处理，分为5等分的矩阵，每个子矩阵用于后续的计算
 scaler = StandardScaler()  #这一行创建了一个 StandardScaler 对象。StandardScaler 是来自 sklearn.preprocessing 模块的一个类，用于对数据进行标准化处理，使其均值为 0，标准差为 1。
 normalized_data = pd.read_excel('../SIS_Dynamic/state_nodes.xlsx')
 
@@ -40,16 +40,16 @@ first_sub_matrix = split_data[0]  # 获取第一个子矩阵
 sis_data = first_sub_matrix.astype(str).agg(lambda x: ''.join(x), axis=1).tolist()  #时间复杂度为O（p*k），p为行数
 #print(sis_data)
 
-threshold = 0.13
-basis = find_basis_strings(sis_data, threshold)
+
+# 设置threshold_X阈值,使用find_basis_strings生成基字符串
+threshold_X = 0.13
+basis = find_basis_strings(sis_data, threshold_X)
 
 basis_count=len(basis)
 print("选择的基字符串个数:", basis_count)
 
 
-# 已有一组基字符串，对于其中每一个基字符串，使用如下代码选择其对应的相关字符串
-
-# 基字符串 ：'basis'  时间序列数据 ：'sis_data'
+# 已有一组基字符串后，设置threshold_Y阈值，对于其中每一个基字符串，使用如下代码选择其对应的相关字符串；基字符串 ：'basis'  时间序列数据 ：'sis_data'
 threshold_Y = 0.1  # 设置阈值
 
 # 创建一个包含不在 basis 中的字符串的新列表
@@ -88,5 +88,5 @@ for basis_string, matches in matching_strings.items():
         Si_ta[basis_string] = [str(value) for value in average_value]
 
 # 输出结果
-#for basis_string, avg in Si_ta.items():
-    #print(f"基字符串 '{basis_string}' 的平均值: {avg}")
+for basis_string, avg in Si_ta.items():
+    print(f"基字符串 '{basis_string}' 的平均值: {avg}")
