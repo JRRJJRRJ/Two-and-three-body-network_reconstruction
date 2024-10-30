@@ -5,6 +5,8 @@ from sklearn.metrics import f1_score
 import os
 from sklearn.linear_model import Ridge
 
+#  版本3
+
 # 调用主函数以获取参数值
 sis_data = test_handle.sis_data
 

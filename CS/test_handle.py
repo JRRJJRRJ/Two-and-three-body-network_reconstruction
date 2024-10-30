@@ -3,7 +3,7 @@ import random
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-
+# 版本3
 # 标准化汉明距离函数，时间复杂度为O（k），k为字符串长度
 def normalized_hamming_distance(s1, s2):
     return np.sum(np.array(list(s1)) != np.array(list(s2))) / max(len(s1), len(s2))
