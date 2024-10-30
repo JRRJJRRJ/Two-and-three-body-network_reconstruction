@@ -118,7 +118,7 @@ def compute_Y(basis, sis_data, chosen_indices, threshold_Y, node_i):
 
 
 
-
+# sis_data数据预处理
 # `time_series_data` 是时间序列数据，对时间序列数据进行预处理，分为5等分的矩阵，每个子矩阵用于后续的计算
 scaler = StandardScaler()  #这一行创建了一个 StandardScaler 对象。StandardScaler 是来自 sklearn.preprocessing 模块的一个类，用于对数据进行标准化处理，使其均值为 0，标准差为 1。
 normalized_data = pd.read_excel('../SIS_Dynamic/Teststate_nodes.xlsx')
